@@ -3,7 +3,6 @@ const auth = require('../middleware/auth');
 const admin = require('../middleware/admin');
 const {Build, validate} = require('../models/build'); 
 const {Device} = require('../models/device');
-const mongoose = require('mongoose');
 const express = require('express');
 const router = express.Router();
 
