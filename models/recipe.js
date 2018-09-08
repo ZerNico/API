@@ -17,14 +17,22 @@ const Recipe = mongoose.model('Recipes', new mongoose.Schema({
   }
 }));
 
-function validateRecipe(recipe) {
+function validateCreateRecipe(recipe) {
   const schema = {
     title: Joi.string().min(5).max(255).required(),
     body: Joi.number().min(0).max(25500).required(),
   };
+  return Joi.validate(recipe, schema);
+}
 
+function validateUpdateRecipe(recipe) {
+  const schema = {
+    title: Joi.string().min(5).max(255),
+    body: Joi.number().min(0).max(25500)
+  };
   return Joi.validate(recipe, schema);
 }
 
 exports.Recipe = Recipe; 
-exports.validate = validateRecipe;
+exports.validateCreate = validateCreateRecipe;
+exports.validateUpdate = validateUpdateRecipe;

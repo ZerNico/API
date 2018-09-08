@@ -1,7 +1,7 @@
 const validateObjectId = require('../middleware/validateObjectId');
 const auth = require('../middleware/auth');
 const admin = require('../middleware/admin');
-const {Recipe, validate} = require('../models/recipe'); 
+const {Recipe, validateCreate, validateUpdate} = require('../models/recipe'); 
 const express = require('express');
 const router = express.Router();
 
@@ -11,7 +11,7 @@ router.get('/', async (req, res) => {
 });
 
 router.post('/', [auth, admin], async (req, res) => {
-  const { error } = validate(req.body); 
+  const { error } = validateCreate(req.body); 
   if (error) return res.status(400).send(error.details[0].message);
 
   const recipe = new Recipe({ 
@@ -23,15 +23,11 @@ router.post('/', [auth, admin], async (req, res) => {
   res.send(recipe);
 });
 
-router.put('/:id', [auth, admin, validateObjectId], async (req, res) => {
-  const { error } = validate(req.body); 
+router.patch('/:id', [auth, admin, validateObjectId], async (req, res) => {
+  const { error } = validateUpdate(req.body); 
   if (error) return res.status(400).send(error.details[0].message);
 
-  const recipe = await Recipe.findByIdAndUpdate(req.params.id,
-    { 
-      title: req.body.title,
-      body: req.body.body
-    }, { new: true });
+  const recipe = await Recipe.findByIdAndUpdate(req.params.id, req.body, { new: true });
 
   if (!recipe) return res.status(404).send('The recipe with the given ID was not found.');
   

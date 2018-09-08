@@ -30,17 +30,27 @@ const deviceSchema = new mongoose.Schema({
 
 const Device = mongoose.model('Device', deviceSchema);
 
-function validateDevice(device) {
+function validateCreateDevice(device) {
   const schema = {
     name: Joi.string().min(3).max(50).required(),
     manufacturer: Joi.string().min(3).max(50).required(),
     codename: Joi.string().min(3).max(50).required(),
     maintainer: Joi.string().min(3).max(50).required()
   };
+  return Joi.validate(device, schema);
+}
 
+function validateUpdateDevice(device) {
+  const schema = {
+    name: Joi.string().min(3).max(50),
+    manufacturer: Joi.string().min(3).max(50),
+    codename: Joi.string().min(3).max(50),
+    maintainer: Joi.string().min(3).max(50)
+  };
   return Joi.validate(device, schema);
 }
 
 exports.deviceSchema = deviceSchema;
 exports.Device = Device; 
-exports.validate = validateDevice;
+exports.validateCreate = validateCreateDevice;
+exports.validateUpdate = validateUpdateDevice;

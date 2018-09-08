@@ -26,16 +26,26 @@ const Build = mongoose.model('Builds', new mongoose.Schema({
   }
 }));
 
-function validateBuild(build) {
+function validateCreateBuild(build) {
   const schema = {
     namme: Joi.string().min(5).max(255).required(),
     deviceId: Joi.objectId().required(),
     size: Joi.number().min(0).required(),
     date: Joi.date().min(0).required()
   };
+  return Joi.validate(build, schema);
+}
 
+function validateUpdateBuild(build) {
+  const schema = {
+    namme: Joi.string().min(5).max(255),
+    deviceId: Joi.objectId(),
+    size: Joi.number().min(0),
+    date: Joi.date().min(0),
+  };
   return Joi.validate(build, schema);
 }
 
 exports.Buid = Build; 
-exports.validate = validateBuild;
+exports.validateCreate = validateCreateBuild;
+exports.validateUpdate = validateUpdateBuild;
