@@ -2,7 +2,7 @@ const Joi = require('joi');
 const auth = require('../middleware/auth');
 const bcrypt = require('bcrypt');
 const _ = require('lodash');
-const {User, validate} = require('../models/user');
+const {User, validateCreate, validateUpdate, validateLogin} = require('../models/user');
 const express = require('express');
 const router = express.Router();
 
@@ -25,8 +25,28 @@ router.get('/me', auth, async (req, res) => {
   res.send(user);
 });
 
+router.patch('/me', auth, async (req, res) => {
+  const { error } = validateUpdate(req.body); 
+  if (error) return res.status(400).send(error.details[0].message);
+
+  let email = await User.findOne({ email: req.body.email });
+  if (email) return res.status(400).send('Email already registered');
+  let username = await User.findOne({ email: req.body.username });
+  if (username) return res.status(400).send('Username already registered.');
+
+  if (req.body.password) {
+    const salt = await bcrypt.genSalt(10);
+    req.body.password  = await bcrypt.hash(req.body.password, salt);
+  }
+
+  const user = await User.findByIdAndUpdate(req.user._id, req.body, { new: true });
+
+  const token = user.generateAuthToken();
+  res.header('x-auth-token', token).send(_.pick(user, ['_id', 'name', 'username', 'email']));
+});
+
 router.post('/register', async (req, res) => {
-  const { error } = validate(req.body); 
+  const { error } = validateCreate(req.body); 
   if (error) return res.status(400).send(error.details[0].message);
 
   let user = await User.findOne({ email: req.body.email });
@@ -38,16 +58,7 @@ router.post('/register', async (req, res) => {
   await user.save();
 
   const token = user.generateAuthToken();
-  res.header('x-auth-token', token).send(_.pick(user, ['_id', 'name', 'email']));
+  res.header('x-auth-token', token).send(_.pick(user, ['_id', 'name', 'username', 'email']));
 });
-
-function validateLogin(req) {
-  const schema = {
-    email: Joi.string().min(5).max(255).required().email(),
-    password: Joi.string().min(5).max(255).required()
-  };
-
-  return Joi.validate(req, schema);
-}
 
 module.exports = router; 

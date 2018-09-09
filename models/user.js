@@ -14,7 +14,8 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: true,
     minlength: 5,
-    maxlength: 50
+    maxlength: 50,
+    unique: true
   },
   email: {
     type: String,
@@ -37,16 +38,44 @@ const userSchema = new mongoose.Schema({
 });
 
 userSchema.methods.generateAuthToken = function() { 
-  const token = jwt.sign({ _id: this._id, isAdmin: this.isAdmin }, config.get('jwtPrivateKey'));
+  const token = jwt.sign({ _id: this._id, username: this.username, isAdmin: this.isAdmin }, config.get('jwtPrivateKey'), {expiresIn: '7d'});
   return token;
 }
 
 const User = mongoose.model('User', userSchema);
 
-function validateUser(user) {
+function validateCreateUser(user) {
   const schema = {
     name: Joi.string().min(5).max(50).required(),
     username: Joi.string().min(5).max(50).required(),
+    email: Joi.string().min(5).max(255).required().email(),
+    password: Joi.string().min(5).max(255).required()
+  };
+  return Joi.validate(user, schema);
+}
+
+function validateUpdateUser(user) {
+  const schema = {
+    name: Joi.string().min(5).max(50),
+    username: Joi.string().min(5).max(50),
+    email: Joi.string().min(5).max(255).email(),
+    password: Joi.string().min(5).max(255)
+  };
+  return Joi.validate(user, schema);
+}
+
+function validateUpdateUser(user) {
+  const schema = {
+    name: Joi.string().min(5).max(50),
+    username: Joi.string().min(5).max(50),
+    email: Joi.string().min(5).max(255).email(),
+    password: Joi.string().min(5).max(255)
+  };
+  return Joi.validate(user, schema);
+}
+
+function validateLoginUser(user) {
+  const schema = {
     email: Joi.string().min(5).max(255).required().email(),
     password: Joi.string().min(5).max(255).required()
   };
@@ -55,4 +84,6 @@ function validateUser(user) {
 }
 
 exports.User = User; 
-exports.validate = validateUser;
+exports.validateCreate = validateCreateUser;
+exports.validateUpdate = validateUpdateUser;
+exports.validateLogin = validateLoginUser;
