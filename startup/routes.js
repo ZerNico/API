@@ -10,7 +10,7 @@ const error = require('../middleware/error');
 module.exports = function(app) {
   app.use(cors());
   app.use(bodyParser.urlencoded({ extended: true }));
-  app.use(express.json());
+  app.use(bodyParser.json());
   app.use('/api/recipes', recipes);
   app.use('/api/builds', builds);
   app.use('/api/devices', devices);
