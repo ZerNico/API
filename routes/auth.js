@@ -1,10 +1,39 @@
-const Joi = require('joi');
 const auth = require('../middleware/auth');
 const bcrypt = require('bcrypt');
+const avatarStorage = require('../helpers/avatarStorage');
 const _ = require('lodash');
 const {User, validateCreate, validateUpdate, validateLogin} = require('../models/user');
 const express = require('express');
+const multer = require('multer');
 const router = express.Router();
+const path = require('path');
+const config = require('config');
+const mkdirp = require('mkdirp');
+const fs = require('fs');
+
+const avatarPath = path.resolve(config.get('avatarPath'));
+
+const upload = multer({
+  storage: new avatarStorage({
+      destination: function (req, file, cb) {
+        if (!fs.existsSync(avatarPath)) {
+          mkdirp(avatarPath, function (err) {
+            if (err) console.error(err)
+            else console.log('pow!')
+          });
+        }
+        cb(null, path.join(avatarPath, req.user._id + '.jpg'))
+      }
+  }),
+  fileFilter: function (req, file, callback) {
+    var ext = path.extname(file.originalname);
+    if(ext !== '.png' && ext !== '.jpg' && ext !== '.gif' && ext !== '.jpeg') {
+        return callback(new Error('Only images are allowed'))
+    }
+    callback(null, true)
+  },
+  limits: { fileSize: 500000 }
+});
 
 router.post('/login', async (req, res) => {
   const { error } = validateLogin(req.body); 
@@ -25,7 +54,23 @@ router.get('/me', auth, async (req, res) => {
   res.send(user);
 });
 
-router.patch('/me', auth, async (req, res) => {
+router.get('/avatar/me', auth, async (req, res) => {
+  if (fs.existsSync(path.join(avatarPath, req.user._id + '.jpg'))) {
+    res.sendFile(path.join(avatarPath, req.user._id + '.jpg'));
+  } else {
+    res.sendFile(path.resolve('helpers/default.jpg'));
+  }
+});
+
+router.get('/avatar/:id', async (req, res) => {
+  if (fs.existsSync(path.join(avatarPath, req.params.id + '.jpg'))) {
+    res.sendFile(path.join(avatarPath, req.params.id + '.jpg'));
+  } else {
+    res.sendFile(path.resolve('helpers/default.jpg'));
+  }
+});
+
+router.patch('/me', auth, upload.single('file'), async (req, res) => {
   const { error } = validateUpdate(req.body); 
   if (error) return res.status(400).send(error.details[0].message);
 
@@ -38,7 +83,7 @@ router.patch('/me', auth, async (req, res) => {
     const salt = await bcrypt.genSalt(10);
     req.body.password  = await bcrypt.hash(req.body.password, salt);
   }
-
+  
   const user = await User.findByIdAndUpdate(req.user._id, req.body, { new: true });
 
   const token = user.generateAuthToken();
