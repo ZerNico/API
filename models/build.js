@@ -37,7 +37,7 @@ function validateCreateBuild(build) {
     deviceId: Joi.objectId().required(),
     versionId: Joi.objectId().required(),
     size: Joi.number().min(0).required(),
-    date: Joi.date().min(0).required()
+    date: Joi.date().min(0)
   };
   return Joi.validate(build, schema);
 }
