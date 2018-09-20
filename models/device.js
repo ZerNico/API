@@ -50,7 +50,6 @@ function validateUpdateDevice(device) {
   return Joi.validate(device, schema);
 }
 
-exports.deviceSchema = deviceSchema;
 exports.Device = Device; 
 exports.validateCreate = validateCreateDevice;
 exports.validateUpdate = validateUpdateDevice;

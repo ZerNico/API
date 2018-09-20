@@ -1,5 +1,6 @@
 {
   "jwtPrivateKey": "",
   "db": "mongodb://localhost/potato",
-  "avatarPath": "avatars" 
+  "avatarPath": "avatars",
+  "buildPath": "builds" 
 }

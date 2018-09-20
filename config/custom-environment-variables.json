@@ -1,4 +1,5 @@
 {
   "jwtPrivateKey": "potato_jwtPrivateKey",
-  "avatarPath": "potato_avatarPath"
+  "avatarPath": "potato_avatarPath",
+  "buildPath": "potato_buildPath"
 }

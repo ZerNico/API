@@ -60,3 +60,7 @@ typings/
 
 # jest coverage build output
 coverage/
+
+# upload paths
+builds/
+avatars/

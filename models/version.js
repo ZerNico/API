@@ -42,7 +42,6 @@ function validateUpdateVersion(version) {
   return Joi.validate(version, schema);
 }
 
-exports.versionSchema = versionSchema;
 exports.Version = Version; 
 exports.validateCreate = validateCreateVersion;
 exports.validateUpdate = validateUpdateVersion;
