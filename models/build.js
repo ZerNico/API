@@ -1,6 +1,7 @@
 const Joi = require('joi');
 const mongoose = require('mongoose');
 const {deviceSchema} = require('./device');
+const {versionSchema} = require('./version');
 
 const Build = mongoose.model('Builds', new mongoose.Schema({
   name: {
@@ -12,6 +13,10 @@ const Build = mongoose.model('Builds', new mongoose.Schema({
   },
   device: { 
     type: deviceSchema,  
+    required: true
+  },
+  version: { 
+    type: versionSchema,  
     required: true
   },
   size: { 
@@ -30,6 +35,7 @@ function validateCreateBuild(build) {
   const schema = {
     namme: Joi.string().min(5).max(255).required(),
     deviceId: Joi.objectId().required(),
+    versionId: Joi.objectId().required(),
     size: Joi.number().min(0).required(),
     date: Joi.date().min(0).required()
   };
@@ -40,6 +46,7 @@ function validateUpdateBuild(build) {
   const schema = {
     namme: Joi.string().min(5).max(255),
     deviceId: Joi.objectId(),
+    VersionId: Joi.objectId(),
     size: Joi.number().min(0),
     date: Joi.date().min(0),
   };
