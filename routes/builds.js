@@ -20,7 +20,7 @@ const storage = multer.diskStorage({
     let device = await Device.findById(req.body.device);
     const uploadPath = path.join(buildPath, device.codename);
     if (!fs.existsSync(uploadPath)) {
-      mkdirp(uploadPath, function (err) {
+      await mkdirp(uploadPath, function (err) {
         if (err) cb(new Error(err));
       });
     }
@@ -59,7 +59,7 @@ router.post('/', [auth, admin], upload.single('buildFile'), async (req, res) => 
   const device = await Device.findById(req.body.device);
   if (!device) return res.status(400).send('Invalid device.');
   const version = await Version.findById(req.body.version);
-  if (version) return res.status(400).send('Invalid version.');
+  if (!version) return res.status(400).send('Invalid version.');
   const name = await Build.findOne({ name: req.file.originalname });
   if (name) return res.status(400).send('File exists already.');
  
@@ -79,9 +79,6 @@ router.patch('/:id', [auth, admin, validateObjectId], async (req, res) => {
   const { error } = validateUpdate(req.body); 
   if (error) return res.status(400).send(error.details[0].message);
 
-  const device = await Device.findById(req.body.deviceId);
-  if (!device) return res.status(400).send('Invalid device.');
-
   const build = await Build.findByIdAndUpdate(req.params.id, req.body, { new: true });
 
   if (!build) return res.status(404).send('The build with the given ID was not found.');
@@ -93,6 +90,12 @@ router.delete('/:id', [auth, admin, validateObjectId], async (req, res) => {
   const build = await Build.findByIdAndRemove(req.params.id);
 
   if (!build) return res.status(404).send('The build with the given ID was not found.');
+  else {
+    let device = await Device.findById(build.device);
+    await fs.unlink(path.join(buildPath, device.codename, build.name), function (err) {
+      if (err) res.status(500).send(err);
+    });
+  }
 
   res.send(build);
 });

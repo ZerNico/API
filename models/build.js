@@ -47,8 +47,6 @@ function validateCreateBuild(build) {
 
 function validateUpdateBuild(build) {
   const schema = {
-    device: Joi.objectId(),
-    Version: Joi.objectId(),
     date: Joi.date()
   };
   return Joi.validate(build, schema);
