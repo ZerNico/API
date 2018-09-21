@@ -25,12 +25,12 @@ const upload = multer({
       cb(null, path.join(avatarPath, req.user._id + '.jpg'));
     }
   }),
-  fileFilter: function (req, file, callback) {
+  fileFilter: function (req, file, cb) {
     var ext = path.extname(file.originalname);
     if(ext !== '.png' && ext !== '.jpg' && ext !== '.gif' && ext !== '.jpeg') {
-      return callback(new Error('Only images are allowed'));
+      return cb(new Error('Only images are allowed'));
     }
-    callback(null, true);
+    cb(null, true);
   },
   limits: {
     fileSize: 1024 * 1024 * 5
