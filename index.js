@@ -1,5 +1,6 @@
-const winston = require('winston');
 const express = require('express');
+const winston = require('winston');
+
 const app = express();
 
 require('./startup/logging')();

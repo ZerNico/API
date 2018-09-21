@@ -1,8 +1,10 @@
-const validateObjectId = require('../middleware/validateObjectId');
-const auth = require('../middleware/auth');
 const admin = require('../middleware/admin');
+const auth = require('../middleware/auth');
+const validateObjectId = require('../middleware/validateObjectId');
 const {Version, validateCreate,  validateUpdate} = require('../models/version');
+
 const express = require('express');
+
 const router = express.Router();
 
 router.get('/', async (req, res) => {

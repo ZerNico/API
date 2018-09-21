@@ -1,16 +1,17 @@
-const auth = require('../middleware/auth');
 const bcrypt = require('bcrypt');
 const avatarStorage = require('../helpers/avatarStorage');
-const _ = require('lodash');
+const auth = require('../middleware/auth');
 const {User, validateCreate, validateUpdate, validateLogin} = require('../models/user');
-const express = require('express');
-const multer = require('multer');
-const router = express.Router();
-const path = require('path');
-const config = require('config');
-const mkdirp = require('mkdirp');
-const fs = require('fs');
 
+const config = require('config');
+const express = require('express');
+const fs = require('fs');
+const _ = require('lodash');
+const mkdirp = require('mkdirp');
+const multer = require('multer');
+const path = require('path');
+
+const router = express.Router();
 const avatarPath = path.resolve(config.get('avatarPath'));
 
 const upload = multer({

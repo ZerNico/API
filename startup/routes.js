@@ -1,11 +1,12 @@
-const cors = require('cors');
-const bodyParser = require('body-parser');
-const recipes = require('../routes/recipes');
+const error = require('../middleware/error');
+const auth = require('../routes/auth');
 const builds = require('../routes/builds');
 const devices = require('../routes/devices');
+const recipes = require('../routes/recipes');
 const versions = require('../routes/versions');
-const auth = require('../routes/auth');
-const error = require('../middleware/error');
+
+const bodyParser = require('body-parser');
+const cors = require('cors');
 
 module.exports = function(app) {
   app.use(cors());

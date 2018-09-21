@@ -1,17 +1,18 @@
-const validateObjectId = require('../middleware/validateObjectId');
-const auth = require('../middleware/auth');
 const admin = require('../middleware/admin');
+const auth = require('../middleware/auth');
+const validateObjectId = require('../middleware/validateObjectId');
 const {Build, validateCreate, validateUpdate} = require('../models/build'); 
 const {Device} = require('../models/device');
 const {Version} = require('../models/version');
-const express = require('express');
-const multer = require('multer');
-const path = require('path');
+
 const config = require('config');
+const express = require('express');
 const fs = require('fs');
 const mkdirp = require('mkdirp');
-const router = express.Router();
+const multer = require('multer');
+const path = require('path');
 
+const router = express.Router();
 const buildPath = path.resolve(config.get('buildPath'));
 
 const storage = multer.diskStorage({
