@@ -15,24 +15,25 @@ const avatarPath = path.resolve(config.get('avatarPath'));
 
 const upload = multer({
   storage: new avatarStorage({
-      destination: function (req, file, cb) {
-        if (!fs.existsSync(avatarPath)) {
-          mkdirp(avatarPath, function (err) {
-            if (err) console.error(err)
-            else console.log('pow!')
-          });
-        }
-        cb(null, path.join(avatarPath, req.user._id + '.jpg'))
+    destination: function (req, file, cb) {
+      if (!fs.existsSync(avatarPath)) {
+        mkdirp(avatarPath, function (err) {
+          if (err) cb(new Error(err));
+        });
       }
+      cb(null, path.join(avatarPath, req.user._id + '.jpg'));
+    }
   }),
   fileFilter: function (req, file, callback) {
     var ext = path.extname(file.originalname);
     if(ext !== '.png' && ext !== '.jpg' && ext !== '.gif' && ext !== '.jpeg') {
-        return callback(new Error('Only images are allowed'))
+      return callback(new Error('Only images are allowed'));
     }
-    callback(null, true)
+    callback(null, true);
   },
-  limits: { fileSize: 500000 }
+  limits: {
+    fileSize: 1024 * 1024 * 5
+  },
 });
 
 router.post('/login', async (req, res) => {

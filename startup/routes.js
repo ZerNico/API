@@ -1,5 +1,4 @@
-const express = require('express');
-const cors = require('cors')
+const cors = require('cors');
 const bodyParser = require('body-parser');
 const recipes = require('../routes/recipes');
 const builds = require('../routes/builds');
@@ -18,4 +17,4 @@ module.exports = function(app) {
   app.use('/api/versions', versions);
   app.use('/api/auth', auth);
   app.use(error);
-}
+};

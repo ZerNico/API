@@ -10,7 +10,6 @@ const path = require('path');
 const config = require('config');
 const fs = require('fs');
 const mkdirp = require('mkdirp');
-const _ = require('lodash')
 const router = express.Router();
 
 const buildPath = path.resolve(config.get('buildPath'));
@@ -18,14 +17,13 @@ const buildPath = path.resolve(config.get('buildPath'));
 const storage = multer.diskStorage({
   destination: async function (req, file, cb) {
     let device = await Device.findById(req.body.device);
-    device = device.codename
-    const uploadPath = path.join(buildPath, device);
+    const uploadPath = path.join(buildPath, device.codename);
     if (!fs.existsSync(uploadPath)) {
       mkdirp(uploadPath, function (err) {
-        if (err) cb(new Error(err))
+        if (err) cb(new Error(err));
       });
     }
-    cb(null, path.join(uploadPath))
+    cb(null, path.join(uploadPath));
   },
   filename: function(req, file, cb) {
     cb(null, file.originalname);
