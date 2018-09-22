@@ -26,7 +26,14 @@ const storage = multer.diskStorage({
     }
     cb(null, path.join(uploadPath));
   },
-  filename: function(req, file, cb) {
+  filename: async function(req, file, cb) {
+    let device = await Device.findById(req.body.device);
+    const uploadPath = path.join(buildPath, device.codename);
+    if (!fs.existsSync(uploadPath)) {
+      await mkdirp(uploadPath, function (err) {
+        if (err) cb(new Error(err));
+      });
+    }
     cb(null, file.originalname);
   }
 });
